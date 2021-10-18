@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
         binding.fabExt.setOnClickListener {
 
             picker.show(supportFragmentManager, "MATERIAL_DATE_PICKER")
@@ -67,8 +68,39 @@ class MainActivity : AppCompatActivity() {
 
         picker.addOnPositiveButtonClickListener {
 
+            calendar.time = Date(it)
+            val year = calendar.get(Calendar.YEAR)
+
+            binding.tv.text = "Last Result: $year"
+            when (year) {
+                in 0..1945 -> {
+                    Toast.makeText(this, "You status unknown!", Toast.LENGTH_LONG).show()
+                    binding.iv.isVisible = false
+                }
+                in 1946..1960 -> {
+                    binding.iv.setImageResource(R.drawable.zx)
+                    binding.iv.isVisible = true
+                }
+                in 1961..1980 -> {
+                    binding.iv.setImageResource(R.drawable.a6)
+                    binding.iv.isVisible = true
+                }
+                in 1981..1996 -> {
+                    binding.iv.setImageResource(R.drawable.go)
+                    binding.iv.isVisible = true
+                }
+                in 1997..2012 -> {
+                    binding.iv.setImageResource(R.drawable.ml)
+                    binding.iv.isVisible = true
+                }
+                else -> {
+                    Toast.makeText(this, "You are very young!", Toast.LENGTH_LONG).show()
+                    binding.iv.isVisible = false
+                }
+            }
 
             sharedPreferences.edit().putLong("PERSON_YEAR", it).apply()
+
 
         }
     }

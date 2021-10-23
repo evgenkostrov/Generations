@@ -1,23 +1,24 @@
 package com.training.generations
 
-import android.app.DatePickerDialog
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.DatePicker
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.training.generations.databinding.ActivityMainBinding
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+   lateinit var  binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding: ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+       binding = ActivityMainBinding.inflate(layoutInflater)
         val view: View = binding.root
 
         setContentView(view)
@@ -31,77 +32,52 @@ class MainActivity : AppCompatActivity() {
         calendar.time = Date(dateLong)
         val year = calendar.get(Calendar.YEAR)
 
+        showImage(year)
         binding.tv.text = "Last Result: $year"
-        when (year) {
-            in 0..1945 -> {
-                Toast.makeText(this, "You status unknown!", Toast.LENGTH_LONG).show()
-                binding.iv.isVisible = false
-            }
-            in 1946..1960 -> {
-                binding.iv.setImageResource(R.drawable.zx)
-                binding.iv.isVisible = true
-            }
-            in 1961..1980 -> {
-                binding.iv.setImageResource(R.drawable.a6)
-                binding.iv.isVisible = true
-            }
-            in 1981..1996 -> {
-                binding.iv.setImageResource(R.drawable.go)
-                binding.iv.isVisible = true
-            }
-            in 1997..2012 -> {
-                binding.iv.setImageResource(R.drawable.ml)
-                binding.iv.isVisible = true
-            }
-            else -> {
-                Toast.makeText(this, "You are very young!", Toast.LENGTH_LONG).show()
-                binding.iv.isVisible = false
+
+        binding.iv.setOnClickListener {
+            when (year) {
+                in 1946..1960 -> openWebPage("https://en.wikipedia.org/wiki/Baby_boomers")
+                in 1961..1980 -> openWebPage("https://en.wikipedia.org/wiki/Generation_X")
+                in 1981..1996 -> openWebPage("https://en.wikipedia.org/wiki/Generation_Y")
+                in 1997..2012 -> openWebPage("https://en.wikipedia.org/wiki/Generation_Z")
             }
         }
-
 
         binding.fabExt.setOnClickListener {
-
             picker.show(supportFragmentManager, "MATERIAL_DATE_PICKER")
-
         }
 
-        picker.addOnPositiveButtonClickListener {
 
+        picker.addOnPositiveButtonClickListener {
             calendar.time = Date(it)
             val year = calendar.get(Calendar.YEAR)
-
+            showImage(year)
             binding.tv.text = "Last Result: $year"
-            when (year) {
-                in 0..1945 -> {
-                    Toast.makeText(this, "You status unknown!", Toast.LENGTH_LONG).show()
-                    binding.iv.isVisible = false
-                }
-                in 1946..1960 -> {
-                    binding.iv.setImageResource(R.drawable.zx)
-                    binding.iv.isVisible = true
-                }
-                in 1961..1980 -> {
-                    binding.iv.setImageResource(R.drawable.a6)
-                    binding.iv.isVisible = true
-                }
-                in 1981..1996 -> {
-                    binding.iv.setImageResource(R.drawable.go)
-                    binding.iv.isVisible = true
-                }
-                in 1997..2012 -> {
-                    binding.iv.setImageResource(R.drawable.ml)
-                    binding.iv.isVisible = true
-                }
-                else -> {
-                    Toast.makeText(this, "You are very young!", Toast.LENGTH_LONG).show()
-                    binding.iv.isVisible = false
-                }
-            }
-
             sharedPreferences.edit().putLong("PERSON_YEAR", it).apply()
+        }
+    }
 
+    private fun openWebPage(url: String) {
+        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        if (webIntent.resolveActivity(packageManager) != null) {
+            startActivity(webIntent)
+        }
+    }
 
+    private fun showImage(year:Int){
+        when (year){
+            in 1946..2012 ->  binding.iv.isVisible = true
+            else -> binding.iv.isVisible = false
+        }
+
+        when (year) {
+            in 0..1945 -> Toast.makeText(this, "You status unknown!", Toast.LENGTH_LONG).show()
+            in 1946..1960 -> binding.iv.setImageResource(R.drawable.zx)
+            in 1961..1980 -> binding.iv.setImageResource(R.drawable.a6)
+            in 1981..1996 ->  binding.iv.setImageResource(R.drawable.go)
+            in 1997..2012 -> binding.iv.setImageResource(R.drawable.ml)
+            else -> Toast.makeText(this, "You are very young!", Toast.LENGTH_LONG).show()
         }
     }
 
